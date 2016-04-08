@@ -1,4 +1,4 @@
-__author__ = 'Robert'
+#!/usr/bin/env python 
 
 import sqlalchemy
 from sqlalchemy import create_engine
@@ -207,6 +207,7 @@ def importSongTempo():
                 session.add(x)
                 session.commit()
 
+
 def importSongGenre():
     with open("song_data_final.json") as datafile:
         data = json.load(datafile)
@@ -304,15 +305,6 @@ def makePlayList(song, length):
 
 
 def main():
-    
-    song = raw_input("Enter a song name: ")
-    length = int(raw_input("Enter playlist length: "))
-    print ''
-    makePlayList(song=song, length=length)
-
-
-
-
     # importArtist()
     # importAlbum()
     # importSong()
@@ -322,6 +314,31 @@ def main():
     # importSongMood()
     # importSongTempo()
     # importSongGenre()
+
+    while 1:
+        print ''
+        print '1) add an artist'
+        print '2) add an album'
+        print '3) add a song'
+        print '4) make a playlist'
+        print '5) exit'
+        option = raw_input("option: ")
+
+        if option == "4":
+            print ''
+            song = raw_input("Enter a song name: ")
+            length = int(raw_input("Enter playlist length: "))
+            print ''
+            makePlayList(song=song, length=length)
+
+        if option == "5":
+            return
+
+
+
+
+
+   
 
 
 
