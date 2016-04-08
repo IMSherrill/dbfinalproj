@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship
 from pprint import pprint
 import json
 import random
+import sys
 
 
 
@@ -234,7 +235,8 @@ def makePlayList(song, length):
         return 
 
     choices = ['mood', 'genre', 'tempo']
-    playlist = []
+    playlist = [songID]
+
 
     while len(playlist) < length:
         choice=random.choice(choices)
@@ -285,10 +287,14 @@ def makePlayList(song, length):
                 playlist.append(song.songid)
 
 
+    playlistByTitle = []
     for songid in playlist:
-        print session.query(Song).filter_by(songid=songid).first().songtitle
+        title = session.query(Song).filter_by(songid=songid).first().songtitle
+        playlistByTitle.append(title)
+        print title
 
-    # print playlist
+
+
 
 
     # TODO: theres gotta be a better way to do this part
@@ -297,22 +303,36 @@ def makePlayList(song, length):
     # print mood
 
 
+def main():
+    
+    song = raw_input("Enter a song name: ")
+    length = int(raw_input("Enter playlist length: "))
+    print ''
+    makePlayList(song=song, length=length)
 
+
+
+
+    # importArtist()
+    # importAlbum()
+    # importSong()
+    # importMood()
+    # importGenre()
+    # importTempo()
+    # importSongMood()
+    # importSongTempo()
+    # importSongGenre()
+
+
+
+if __name__ == '__main__':
+  main()
 
 
      
             
 
 
-# importArtist()
-# importAlbum()
-# importSong()
-# importMood()
-# importGenre()
-# importTempo()
-# importSongMood()
-# importSongTempo()
-# importSongGenre()
-makePlayList(song="Dancing Queen", length=10)
+
 
 
