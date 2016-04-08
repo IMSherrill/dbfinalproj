@@ -226,6 +226,96 @@ def importSongGenre():
                 session.commit()
 
 
+def addSingleArtist():
+    artistExists = True
+    while artistExists:
+        artistName = raw_input("Enter the artist's name: ")
+        if session.query(Artist).filter_by(name=artistName).first():
+            print("This artist already exists in the database. Please try again.")
+        else:
+            artistExists = False
+    thisera = raw_input("Please enter the artist's era: ")
+    artist = Artist(name=artistName, era=thisera)
+    session.add(artist)
+    session.commit()
+
+
+def addSingleAlbum():
+    albumExists = True
+    while albumExists:
+        albumName = raw_input("Please enter the name of the Album: ")
+        artistName = raw_input("Please enter the name of the Artist: ")
+        if not session.query(Artist).filter_by(name=artistName).first():
+            print "This artist does not exist. Please enter an existing Artist: "
+            continue
+        else:
+            artist = session.query(Artist).filter_by(name=artistName).first()
+            artistID = artist.artistid
+            if session.query(Album).filter_by(albumtitle=albumName, artistid=artistID).first():
+                print "This album exists, please try again."
+                continue
+            else:
+                thisalbum = Album(albumtitle=albumName, artistid=artistID)
+                session.add(thisalbum)
+                session.commit()
+                albumExists = False
+
+
+
+def addSingleSong():
+    songExists = False
+    while not songExists:
+        songName = raw_input("Please enter the name of the song: ")
+        artistName = raw_input("Please enter the name of the artist: ")
+        albumName = raw_input("Please enter the name of the album: ")
+        if not session.query(Artist).filter_by(name=artistName).first():
+            print "This artist does not exist. Please enter an existing Artist: "
+            continue
+        if not session.query(Album).filter_by(albumtitle=artistName).first():
+            print "This album does not exist. Please enter an existing album name: "
+            continue
+        else:
+            artist = session.query(Artist).filter_by(name=artistName).first()
+            artistID = artist.artistid
+            album = session.query(Album).filter_by(albumtitle=albumName).first()
+            albumID = album.albumid
+            if session.query(Song).filter_by(name=songName, artistid=artistID, albumid=albumID).first():
+                print "This song already exists."
+                continue
+            else:
+                thissong = Song(name=songName, artistid=artistID, albumid=albumID)
+                session.add(thissong)
+                session.commit()
+                songExists = True
+                alldbmoods = session.query(Mood).all()
+                allmoods = []
+                for mood in allmoods:
+                    allmoods.append(mood.name)
+                pprint(allmoods)
+                mood = raw_input("What is the mood of this song: ")
+                if mood not in allmoods:
+                    addMood(mood)
+                addSongMood(songName, mood)
+                alldbgenres = session.query(Genre).all()
+                allgenres = []
+                for genre in alldbgenres:
+                    allgenres.append(genre.name)
+                pprint(allgenres)
+                genre = raw_input("What is the genre of this song: ")
+                if genre not in allgenres:
+                    addGenre(genre)
+                addSongGenre(songName, genre)
+                alldbtempos = session.query(Tempo).all()
+                alltempos = []
+                for tempo in alldbtempos:
+                    alltempos.append(tempo.name)
+                pprint(alltempos)
+                tempo = raw_input("What is the tempo of this song: ")
+                if tempo not in alltempos:
+                    addTempo(tempo)
+                addSongTempo(songName, tempo)
+
+
 def makePlayList(song, length):
     try:
         song = session.query(Song).filter_by(songtitle=song).first()
@@ -375,13 +465,13 @@ def main():
             return
 
         if option == "1":
-            pass
+            addSingleArtist()
 
         if option == "2":
-            pass
+            addSingleAlbum()
 
         if option == "3":
-            pass
+            addSingleSong()
 
         if option == "4":
             print ''
