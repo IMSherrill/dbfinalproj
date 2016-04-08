@@ -9,6 +9,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from pprint import pprint
 import json
+import random
 
 
 
@@ -29,83 +30,83 @@ session = Session()
 
 class Artist(Base):
     __tablename__ = "Artist"
-    ArtistId = Column(Integer, nullable=False, unique=True, primary_key=True)
-    ArtistName = Column(String)
-    Era = Column(String)
+    artistid = Column(Integer, nullable=False, unique=True, primary_key=True)
+    name = Column(String)
+    era = Column(String)
 
 class Album(Base):
     __tablename__ = "Album"
-    AlbumId = Column(Integer, primary_key=True)
-    AlbumTitle = Column(String)
-    ArtistId = Column(Integer, ForeignKey(Artist.ArtistId))
-    artist = relationship("Artist", foreign_keys={ArtistId})
+    albumid = Column(Integer, primary_key=True)
+    albumtitle = Column(String)
+    artistid = Column(Integer, ForeignKey(Artist.artistid))
+    artist = relationship("Artist", foreign_keys={artistid})
 
 
 class Song(Base):
     __tablename__ = 'Song'
-    SongId = Column(Integer, primary_key=True)
-    SongTitle = Column(String)
-    ArtistId = Column(Integer, ForeignKey(Artist.ArtistId))
-    AlbumId = Column(Integer, ForeignKey(Album.AlbumId))
+    songid = Column(Integer, primary_key=True)
+    songtitle = Column(String)
+    artistid = Column(Integer, ForeignKey(Artist.artistid))
+    albumid = Column(Integer, ForeignKey(Album.albumid))
 
-    artist = relationship("Artist", foreign_keys={ArtistId})
-    album = relationship("Album", foreign_keys={AlbumId})
+    artist = relationship("Artist", foreign_keys={artistid})
+    album = relationship("Album", foreign_keys={albumid})
 
 class Tempo(Base):
     __tablename__ = "Tempo"
-    TempoID = Column(Integer, primary_key=True)
-    Tempo = Column(String)
+    tempoid = Column(Integer, primary_key=True)
+    name = Column(String)
 
 class Mood(Base):
     __tablename__ = "Mood"
-    MoodID = Column(Integer, primary_key=True)
-    Mood = Column(String)
+    moodid = Column(Integer, primary_key=True)
+    name = Column(String)
 
 class Genre(Base):
     __tablename__ = "Genre"
-    GenreID = Column(Integer, primary_key=True)
-    GenreName = Column(String)
+    genreid = Column(Integer, primary_key=True)
+    name = Column(String)
 
 class Playlist(Base):
     __tablename__ = "Playlist"
-    PlaylistID = Column(Integer, primary_key=True)
-    PlaylistName = Column(String)
+    playlistid = Column(Integer, primary_key=True)
+    name = Column(String)
 
 class SongGenre(Base):
     __tablename__ = "SongGenre"
-    SongGenreID = Column(Integer, primary_key=True)
-    SongId = Column(Integer, ForeignKey(Song.SongId))
-    GenreID = Column(Integer, ForeignKey(Genre.GenreID))
+    Songgenreid = Column(Integer, primary_key=True)
+    songid = Column(Integer, ForeignKey(Song.songid))
+    genreid = Column(Integer, ForeignKey(Genre.genreid))
 
-    song = relationship("Song", foreign_keys={SongId})
-    genre = relationship("Genre", foreign_keys={GenreID})
+    song = relationship("Song", foreign_keys={songid})
+    genre = relationship("Genre", foreign_keys={genreid})
 
 class SongTempo(Base):
     __tablename__ = "SongTempo"
-    SongTempoID = Column(Integer, primary_key=True)
-    SongId = Column(Integer, ForeignKey(Song.SongId))
-    TempoID = Column(Integer, ForeignKey(Tempo.TempoID))
+    songtempoid = Column(Integer, primary_key=True)
+    songid = Column(Integer, ForeignKey(Song.songid))
+    tempoid = Column(Integer, ForeignKey(Tempo.tempoid))
 
-    song = relationship("Song", foreign_keys={SongId})
-    tempo = relationship("Tempo", foreign_keys={TempoID})
+    song = relationship("Song", foreign_keys={songid})
+    tempo = relationship("Tempo", foreign_keys={tempoid})
 
 class SongMood(Base):
     __tablename__ = "SongMood"
-    SongMoodID = Column(Integer, primary_key=True)
-    SongId = Column(Integer, ForeignKey(Song.SongId))
-    MoodID = Column(Integer, ForeignKey(Mood.MoodID))
+    songmoodid = Column(Integer, primary_key=True)
+    songid = Column(Integer, ForeignKey(Song.songid))
+    moodid = Column(Integer, ForeignKey(Mood.moodid))
 
-    song = relationship("Song", foreign_keys={SongId})
-    mood = relationship("Mood", foreign_keys={MoodID})
+    song = relationship("Song", foreign_keys={songid})
+    mood = relationship("Mood", foreign_keys={moodid})
 
 class SongPlaylist(Base):
     __tablename__ = "songplaylist"
-    SongPlaylistID = Column(Integer, primary_key=True)
-    SongId = Column(Integer, ForeignKey(Song.SongId))
-    PlaylistID = Column(Integer, ForeignKey(Playlist.PlaylistID))
+    songplaylistid = Column(Integer, primary_key=True)
+    songid = Column(Integer, ForeignKey(Song.songid))
+    playlistid = Column(Integer, ForeignKey(Playlist.playlistid))
 
-    song = relationship("Song", foreign_keys={SongId})
-    playlist = relationship("Playlist", foreign_keys={PlaylistID})
+    song = relationship("Song", foreign_keys={songid})
+    playlist = relationship("Playlist", foreign_keys={playlistid})
 
 
 Base.metadata.create_all(conn)
@@ -113,9 +114,8 @@ Base.metadata.create_all(conn)
 def addArtist():
     with open("artist_data_final.json") as datafile:
         data = json.load(datafile)
-        pprint(data)
         for artist in data:
-            a = Artist(ArtistName=artist.get("name"), Era=artist.get("era"))
+            a = Artist(name=artist.get("name"), era=artist.get("era"))
             session.add(a)
             session.commit()
 
@@ -123,9 +123,9 @@ def addAlbum():
     with open("album_data_final.json") as datafile:
         data = json.load(datafile)
         for album in data:
-            artistInfo = session.query(Artist).filter_by(ArtistName=album['artist']).first()
-            artistID = int(artistInfo.ArtistId)
-            a = Album(AlbumTitle=album.get("title"), ArtistId=artistID)
+            artistInfo = session.query(Artist).filter_by(name=album['artist']).first()
+            artistID = int(artistInfo.artistid)
+            a = Album(albumtitle=album.get("title"), artistid=artistID)
             session.add(a)
             session.commit()
 
@@ -133,13 +133,13 @@ def addSong():
     with open("song_data_final.json") as datafile:
         data = json.load(datafile)
         for song in data:
-            artistInfo = session.query(Artist).filter_by(ArtistName=song['artist']).first()
-            artistID = int(artistInfo.ArtistId)
+            artistInfo = session.query(Artist).filter_by(name=song['artist']).first()
+            artistID = int(artistInfo.artistid)
 
-            albumInfo = session.query(Album).filter_by(AlbumTitle=song['album_title']).first()
-            albumID = int(albumInfo.AlbumId)
+            albumInfo = session.query(Album).filter_by(albumtitle=song['album_title']).first()
+            albumid = int(albumInfo.albumid)
 
-            s = Song(SongTitle=song['track_title'], ArtistId=artistID, AlbumId=albumID)
+            s = Song(songtitle=song['track_title'], artistid=artistID, albumid=albumid)
             session.add(s)
             session.commit()
 
@@ -147,7 +147,7 @@ def addMood():
     with open("mood_data_final.json") as datafile:
         data = json.load(datafile)
         for mood in data:
-            m = Mood(Mood=mood)
+            m = Mood(name=mood)
             session.add(m)
             session.commit()
 
@@ -155,7 +155,7 @@ def addGenre():
     with open("genre_data_final.json") as datafile:
         data = json.load(datafile)
         for genre in data:
-            g = Genre(GenreName=genre)
+            g = Genre(name=genre)
             session.add(g)
             session.commit()
 
@@ -164,7 +164,7 @@ def addTempo():
     with open("tempo_data_final.json") as datafile:
         data = json.load(datafile)
         for tempo in data:
-            t = Tempo(Tempo=tempo)
+            t = Tempo(name=tempo)
             session.add(t)
             session.commit()
 
@@ -173,16 +173,16 @@ def addSongMood():
         data = json.load(datafile)
 
         for song in data:
-            songInfo = session.query(Song).filter_by(SongTitle=song['track_title']).first()
-            songID = int(songInfo.SongId)
+            songInfo = session.query(Song).filter_by(songtitle=song['track_title']).first()
+            songid = int(songInfo.songid)
 
             for mood in song['mood'].values():
                 m = mood['TEXT']
 
-                moodInfo = session.query(Mood).filter_by(Mood=m).first()
-                moodID = int(moodInfo.MoodID)
+                moodInfo = session.query(Mood).filter_by(name=m).first()
+                moodid = int(moodInfo.moodid)
 
-                x = SongMood(SongId=songID , MoodID=moodID)
+                x = SongMood(songid=songid , moodid=moodid)
                 session.add(x)
                 session.commit()
 
@@ -193,16 +193,16 @@ def addSongTempo():
         data = json.load(datafile)
 
         for song in data:
-            songInfo = session.query(Song).filter_by(SongTitle=song['track_title']).first()
-            songID = int(songInfo.SongId)
+            songInfo = session.query(Song).filter_by(songtitle=song['track_title']).first()
+            songid = int(songInfo.songid)
 
             for tempo in song['tempo'].values():
                 t = tempo['TEXT']
 
-                tempoInfo = session.query(Tempo).filter_by(Tempo=t).first()
-                tempoID = int(tempoInfo.TempoID)
+                tempoInfo = session.query(Tempo).filter_by(name=t).first()
+                tempoid = int(tempoInfo.tempoid)
 
-                x = SongTempo(SongId=songID , TempoID=tempoID)
+                x = SongTempo(songid=songid , tempoid=tempoid)
                 session.add(x)
                 session.commit()
 
@@ -211,18 +211,32 @@ def addSongGenre():
         data = json.load(datafile)
 
         for song in data:
-            songInfo = session.query(Song).filter_by(SongTitle=song['track_title']).first()
-            songID = int(songInfo.SongId)
+            songInfo = session.query(Song).filter_by(songtitle=song['track_title']).first()
+            songid = int(songInfo.songid)
 
             for genre in song['genre'].values():
                 g = genre['TEXT']
 
-                genreInfo = session.query(Genre).filter_by(GenreName=g).first()
-                genreID = int(genreInfo.GenreID)
+                genreInfo = session.query(Genre).filter_by(name=g).first()
+                genreid = int(genreInfo.genreid)
 
-                x = SongGenre(SongId=songID , GenreID=genreID)
+                x = SongGenre(songid=songid , genreid=genreid)
                 session.add(x)
                 session.commit()
+
+
+def makePlayList(song):
+    song = session.query(Song).filter_by(songtitle=song).first()
+    choices = ['mood', 'genre', 'tempo']
+    playlist = []
+
+    # TODO: theres gotta be a better way to do this part
+    moodid = session.query(SongMood).filter_by(songid=song.songid).first().moodid
+    moods = session.query(Mood).filter_by(moodid=moodid).first().Mood
+    print mood
+
+
+
 
 
      
@@ -238,3 +252,6 @@ def addSongGenre():
 # addSongMood()
 # addSongTempo()
 # addSongGenre()
+makePlayList(song="Dancing Queen")
+
+
