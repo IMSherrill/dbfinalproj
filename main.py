@@ -111,7 +111,7 @@ class SongPlaylist(Base):
 
 Base.metadata.create_all(conn)
 
-def addArtist():
+def importArtist():
     with open("artist_data_final.json") as datafile:
         data = json.load(datafile)
         for artist in data:
@@ -119,7 +119,7 @@ def addArtist():
             session.add(a)
             session.commit()
 
-def addAlbum():
+def importAlbum():
     with open("album_data_final.json") as datafile:
         data = json.load(datafile)
         for album in data:
@@ -129,7 +129,7 @@ def addAlbum():
             session.add(a)
             session.commit()
 
-def addSong():
+def importSong():
     with open("song_data_final.json") as datafile:
         data = json.load(datafile)
         for song in data:
@@ -143,7 +143,7 @@ def addSong():
             session.add(s)
             session.commit()
 
-def addMood():
+def importMood():
     with open("mood_data_final.json") as datafile:
         data = json.load(datafile)
         for mood in data:
@@ -151,7 +151,7 @@ def addMood():
             session.add(m)
             session.commit()
 
-def addGenre():
+def importGenre():
     with open("genre_data_final.json") as datafile:
         data = json.load(datafile)
         for genre in data:
@@ -160,7 +160,7 @@ def addGenre():
             session.commit()
 
 
-def addTempo():
+def importTempo():
     with open("tempo_data_final.json") as datafile:
         data = json.load(datafile)
         for tempo in data:
@@ -168,7 +168,7 @@ def addTempo():
             session.add(t)
             session.commit()
 
-def addSongMood():
+def importSongMood():
     with open("song_data_final.json") as datafile:
         data = json.load(datafile)
 
@@ -188,7 +188,7 @@ def addSongMood():
 
 
 
-def addSongTempo():
+def importSongTempo():
     with open("song_data_final.json") as datafile:
         data = json.load(datafile)
 
@@ -206,7 +206,7 @@ def addSongTempo():
                 session.add(x)
                 session.commit()
 
-def addSongGenre():
+def importSongGenre():
     with open("song_data_final.json") as datafile:
         data = json.load(datafile)
 
@@ -227,13 +227,31 @@ def addSongGenre():
 
 def makePlayList(song):
     song = session.query(Song).filter_by(songtitle=song).first()
+    songID = song.songid
+
     choices = ['mood', 'genre', 'tempo']
     playlist = []
 
+    # while len(playlist) < 3:
+    # choice=random.choice(choices)
+    choice = 'mood'
+    if choice == 'mood':
+        songmoods=session.query(SongMood).filter_by(songid=songID).all()
+        for songmood in songmoods:
+            mood = session.query(Mood).filter_by(moodid=songmood.moodid).first()
+            print mood.name
+
+
+    if choice == 'genre':
+        pass
+    if choice == 'tempo':
+        pass
+
+
     # TODO: theres gotta be a better way to do this part
-    moodid = session.query(SongMood).filter_by(songid=song.songid).first().moodid
-    moods = session.query(Mood).filter_by(moodid=moodid).first().Mood
-    print mood
+    # moodid = session.query(SongMood).filter_by(songid=song.songid).first().moodid
+    # moods = session.query(Mood).filter_by(moodid=moodid).first().Mood
+    # print mood
 
 
 
@@ -243,15 +261,15 @@ def makePlayList(song):
             
 
 
-# addArtist()
-# addAlbum()
-# addSong()
-# addMood()
-# addGenre()
-# addTempo()
-# addSongMood()
-# addSongTempo()
-# addSongGenre()
+# importArtist()
+# importAlbum()
+# importSong()
+# importMood()
+# importGenre()
+# importTempo()
+# importSongMood()
+# importSongTempo()
+# importSongGenre()
 makePlayList(song="Dancing Queen")
 
 
