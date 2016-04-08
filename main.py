@@ -225,27 +225,70 @@ def importSongGenre():
                 session.commit()
 
 
-def makePlayList(song):
-    song = session.query(Song).filter_by(songtitle=song).first()
-    songID = song.songid
+def makePlayList(song, length):
+    try:
+        song = session.query(Song).filter_by(songtitle=song).first()
+        songID = song.songid
+    except:
+        print 'error song not found in database try a new one'
+        return 
 
     choices = ['mood', 'genre', 'tempo']
     playlist = []
 
-    # while len(playlist) < 3:
-    # choice=random.choice(choices)
-    choice = 'mood'
-    if choice == 'mood':
-        songmoods=session.query(SongMood).filter_by(songid=songID).all()
-        for songmood in songmoods:
-            mood = session.query(Mood).filter_by(moodid=songmood.moodid).first()
-            print mood.name
+    while len(playlist) < length:
+        choice=random.choice(choices)
+
+        if choice == 'mood':
+            moodids = []
+            songmoods=session.query(SongMood).filter_by(songid=songID).all()
+            for songmood in songmoods:
+                mood = session.query(Mood).filter_by(moodid=songmood.moodid).first()
+                moodids.append(mood.moodid)
+
+            mid = random.choice(moodids)
+            songmoodswithmoodid = session.query(SongMood).filter_by(moodid=mid).all()
+            songmood = random.choice(songmoodswithmoodid)
+            song = session.query(Song).filter_by(songid=songmood.songid).first()
+            if song.songid not in playlist:
+                playlist.append(song.songid)
 
 
-    if choice == 'genre':
-        pass
-    if choice == 'tempo':
-        pass
+
+        if choice == 'genre':
+            genreids = []
+            songgenres=session.query(SongGenre).filter_by(songid=songID).all()
+            for songgenre in songgenres:
+                genre = session.query(Genre).filter_by(genreid=songgenre.genreid).first()
+                genreids.append(genre.genreid)
+
+            gid = random.choice(genreids)
+            songgenreswithgenreid = session.query(SongGenre).filter_by(genreid=gid).all()
+            songgenre = random.choice(songgenreswithgenreid)
+            song = session.query(Song).filter_by(songid=songgenre.songid).first()
+            if song.songid not in playlist:
+                playlist.append(song.songid)
+
+
+        if choice == 'tempo':
+            tempoids = []
+            songtempos=session.query(SongTempo).filter_by(songid=songID).all()
+            for songtempo in songtempos:
+                tempo = session.query(Tempo).filter_by(tempoid=songtempo.tempoid).first()
+                tempoids.append(tempo.tempoid)
+
+            tid = random.choice(tempoids)
+            songtemposwithtempoid = session.query(SongTempo).filter_by(tempoid=tid).all()
+            songtempo = random.choice(songtemposwithtempoid)
+            song = session.query(Song).filter_by(songid=songtempo.songid).first()
+            if song.songid not in playlist:
+                playlist.append(song.songid)
+
+
+    for songid in playlist:
+        print session.query(Song).filter_by(songid=songid).first().songtitle
+
+    # print playlist
 
 
     # TODO: theres gotta be a better way to do this part
@@ -270,6 +313,6 @@ def makePlayList(song):
 # importSongMood()
 # importSongTempo()
 # importSongGenre()
-makePlayList(song="Dancing Queen")
+makePlayList(song="Dancing Queen", length=10)
 
 
