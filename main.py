@@ -324,6 +324,15 @@ def main():
         print '5) exit'
         option = raw_input("option: ")
 
+        if option == "1":
+            pass
+
+        if option == "2":
+            pass
+
+        if option == "3":
+            pass
+
         if option == "4":
             print ''
             song = raw_input("Enter a song name: ")
