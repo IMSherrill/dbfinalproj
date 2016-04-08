@@ -14,15 +14,13 @@ import random
 import sys
 
 
-
-
 # Connection settings
 settings = {
-    'userName': 'root',           # The name of the MySQL account to use (or empty for anonymous)
-    'password': '',           # The password for the MySQL account (or empty for anonymous)
-    'serverName': "localhost",    # The name of the computer running MySQL
-    'portNumber': 3306,           # The port of the MySQL server (default is 3306)from sqlalchemy import create_engine
-    'dbName': "final",             # The name of the database we are testing with (this default is installed with MySQL)
+    'userName': 'root',
+    'password': '',
+    'serverName': "localhost",
+    'portNumber': 3306,
+    'dbName': "final",
 }
 
 conn = create_engine('mysql://{0[userName]}:{0[password]}@{0[serverName]}:{0[portNumber]}/{0[dbName]}'.format(settings))
@@ -325,6 +323,20 @@ def getPlaylist(playlistname):
         song = session.query(Song).filter_by(songid=songplaylist.songid).first()
         print song.songtitle
 
+
+def deletePlaylist(playlistname):
+    try:
+        playlist = session.query(Playlist).filter_by(name=playlistname).first()
+        pid = playlist.playlistid
+    except:
+        print 'error: playlist with that name does not exist'
+        return
+
+    session.query(SongPlaylist).filter_by(playlistid=pid).delete()
+    session.query(Playlist).filter_by(playlistid=pid).delete()
+    session.commit()
+
+
     
 
 
@@ -355,6 +367,7 @@ def main():
         print '3) add a song'
         print '4) make a playlist'
         print '5) get a playlist'
+        print '6) delete a playlist'
 
         option = raw_input("option: ")
 
@@ -383,11 +396,15 @@ def main():
             getPlaylist(playlistname=playlistname)
             print ''
 
+        if option == "6":
+            print ''
+            playlistname = raw_input("Enter playlist name: ")
+            deletePlaylist(playlistname=playlistname)
+            print ''
 
 
 
 
-   
 
 
 
