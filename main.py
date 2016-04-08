@@ -15,8 +15,8 @@ import json
 
 # Connection settings
 settings = {
-    'userName': 'rshanholtz',           # The name of the MySQL account to use (or empty for anonymous)
-    'password': 'blackbelt95',           # The password for the MySQL account (or empty for anonymous)
+    'userName': 'root',           # The name of the MySQL account to use (or empty for anonymous)
+    'password': '',           # The password for the MySQL account (or empty for anonymous)
     'serverName': "localhost",    # The name of the computer running MySQL
     'portNumber': 3306,           # The port of the MySQL server (default is 3306)from sqlalchemy import create_engine
     'dbName': "final",             # The name of the database we are testing with (this default is installed with MySQL)
@@ -129,3 +129,112 @@ def addAlbum():
             session.add(a)
             session.commit()
 
+def addSong():
+    with open("song_data_final.json") as datafile:
+        data = json.load(datafile)
+        for song in data:
+            artistInfo = session.query(Artist).filter_by(ArtistName=song['artist']).first()
+            artistID = int(artistInfo.ArtistId)
+
+            albumInfo = session.query(Album).filter_by(AlbumTitle=song['album_title']).first()
+            albumID = int(albumInfo.AlbumId)
+
+            s = Song(SongTitle=song['track_title'], ArtistId=artistID, AlbumId=albumID)
+            session.add(s)
+            session.commit()
+
+def addMood():
+    with open("mood_data_final.json") as datafile:
+        data = json.load(datafile)
+        for mood in data:
+            m = Mood(Mood=mood)
+            session.add(m)
+            session.commit()
+
+def addGenre():
+    with open("genre_data_final.json") as datafile:
+        data = json.load(datafile)
+        for genre in data:
+            g = Genre(GenreName=genre)
+            session.add(g)
+            session.commit()
+
+
+def addTempo():
+    with open("tempo_data_final.json") as datafile:
+        data = json.load(datafile)
+        for tempo in data:
+            t = Tempo(Tempo=tempo)
+            session.add(t)
+            session.commit()
+
+def addSongMood():
+    with open("song_data_final.json") as datafile:
+        data = json.load(datafile)
+
+        for song in data:
+            songInfo = session.query(Song).filter_by(SongTitle=song['track_title']).first()
+            songID = int(songInfo.SongId)
+
+            for mood in song['mood'].values():
+                m = mood['TEXT']
+
+                moodInfo = session.query(Mood).filter_by(Mood=m).first()
+                moodID = int(moodInfo.MoodID)
+
+                x = SongMood(SongId=songID , MoodID=moodID)
+                session.add(x)
+                session.commit()
+
+
+
+def addSongTempo():
+    with open("song_data_final.json") as datafile:
+        data = json.load(datafile)
+
+        for song in data:
+            songInfo = session.query(Song).filter_by(SongTitle=song['track_title']).first()
+            songID = int(songInfo.SongId)
+
+            for tempo in song['tempo'].values():
+                t = tempo['TEXT']
+
+                tempoInfo = session.query(Tempo).filter_by(Tempo=t).first()
+                tempoID = int(tempoInfo.TempoID)
+
+                x = SongTempo(SongId=songID , TempoID=tempoID)
+                session.add(x)
+                session.commit()
+
+def addSongGenre():
+    with open("song_data_final.json") as datafile:
+        data = json.load(datafile)
+
+        for song in data:
+            songInfo = session.query(Song).filter_by(SongTitle=song['track_title']).first()
+            songID = int(songInfo.SongId)
+
+            for genre in song['genre'].values():
+                g = genre['TEXT']
+
+                genreInfo = session.query(Genre).filter_by(GenreName=g).first()
+                genreID = int(genreInfo.GenreID)
+
+                x = SongGenre(SongId=songID , GenreID=genreID)
+                session.add(x)
+                session.commit()
+
+
+     
+            
+
+
+# addArtist()
+# addAlbum()
+# addSong()
+# addMood()
+# addGenre()
+# addTempo()
+# addSongMood()
+# addSongTempo()
+# addSongGenre()
