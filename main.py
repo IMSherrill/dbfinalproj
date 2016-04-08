@@ -414,6 +414,18 @@ def getPlaylist(playlistname):
         print song.songtitle
 
 
+def updatePlaylistName():
+    oldplaylistname = raw_input("whats the playlists old name: ")
+    playlist = session.query(Playlist).filter_by(name=oldplaylistname).first()
+
+    if not playlist:
+        print 'error: playlist does not exist'
+        return
+
+    newPlaylistname = raw_input("whats the playlists new name: ")
+    playlist.name = newPlaylistname
+    session.commit()
+
 def deletePlaylist(playlistname):
     try:
         playlist = session.query(Playlist).filter_by(name=playlistname).first()
@@ -457,7 +469,8 @@ def main():
         print '3) add a song'
         print '4) make a playlist'
         print '5) get a playlist'
-        print '6) delete a playlist'
+        print '6) update playlist name'
+        print '7) delete a playlist'
 
         option = raw_input("option: ")
 
@@ -487,6 +500,9 @@ def main():
             print ''
 
         if option == "6":
+            updatePlaylistName()
+
+        if option == "7":
             print ''
             playlistname = raw_input("Enter playlist name: ")
             deletePlaylist(playlistname=playlistname)
