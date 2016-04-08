@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Sequence
 from sqlalchemy import ForeignKey
+from sqlalchemy import desc
 from sqlalchemy.orm import relationship
 from pprint import pprint
 import json
@@ -294,6 +295,38 @@ def makePlayList(song, length):
         playlistByTitle.append(title)
         print title
 
+    save = raw_input("save playlist? (Y/n) ")
+    if save == "Y":
+        playlistname = raw_input("save as: ")
+        newPlaylist = Playlist(name=playlistname)
+        session.add(newPlaylist)
+        session.commit()
+
+        PlaylistObject = session.query(Playlist).filter_by(name=playlistname).order_by(desc(Playlist.playlistid)).first()
+        pid = PlaylistObject.playlistid
+
+        for songid in playlist:
+            songToPlaylist = SongPlaylist(songid=songid, playlistid=pid)
+            session.add(songToPlaylist)
+            session.commit()
+
+
+def getPlaylist(playlistname):
+    try:
+        playlist = session.query(Playlist).filter_by(name=playlistname).first()
+        pid = playlist.playlistid
+    except:
+        print 'error: playlist with that name does not exist'
+        return
+
+    songplaylists = session.query(SongPlaylist).filter_by(playlistid=pid)
+
+    for songplaylist in songplaylists:
+        song = session.query(Song).filter_by(songid=songplaylist.songid).first()
+        print song.songtitle
+
+    
+
 
 
 
@@ -316,13 +349,17 @@ def main():
     # importSongGenre()
 
     while 1:
-        print ''
+        print '0) exit'
         print '1) add an artist'
         print '2) add an album'
         print '3) add a song'
         print '4) make a playlist'
-        print '5) exit'
+        print '5) get a playlist'
+
         option = raw_input("option: ")
+
+        if option == "0":
+            return
 
         if option == "1":
             pass
@@ -341,7 +378,10 @@ def main():
             makePlayList(song=song, length=length)
 
         if option == "5":
-            return
+            print ''
+            playlistname = raw_input("Enter playlist name: ")
+            getPlaylist(playlistname=playlistname)
+            print ''
 
 
 
