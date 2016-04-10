@@ -261,7 +261,6 @@ def addSingleAlbum():
                 albumExists = False
 
 
-
 def addSingleSong():
     songExists = False
     while not songExists:
@@ -271,7 +270,7 @@ def addSingleSong():
         if not session.query(Artist).filter_by(name=artistName).first():
             print "This artist does not exist. Please enter an existing Artist: "
             continue
-        if not session.query(Album).filter_by(albumtitle=artistName).first():
+        if not session.query(Album).filter_by(albumtitle=albumName).first():
             print "This album does not exist. Please enter an existing album name: "
             continue
         else:
@@ -279,21 +278,21 @@ def addSingleSong():
             artistID = artist.artistid
             album = session.query(Album).filter_by(albumtitle=albumName).first()
             albumID = album.albumid
-            if session.query(Song).filter_by(name=songName, artistid=artistID, albumid=albumID).first():
+            if session.query(Song).filter_by(songtitle=songName, artistid=artistID, albumid=albumID).first():
                 print "This song already exists."
                 continue
             else:
-                thissong = Song(name=songName, artistid=artistID, albumid=albumID)
+                thissong = Song(songtitle=songName, artistid=artistID, albumid=albumID)
                 session.add(thissong)
                 session.commit()
                 songExists = True
                 alldbmoods = session.query(Mood).all()
                 allmoods = []
-                for mood in allmoods:
+                for mood in alldbmoods:
                     allmoods.append(mood.name)
                 pprint(allmoods)
                 mood = raw_input("What is the mood of this song: ")
-                if mood not in allmoods:
+                if mood not in alldbmoods:
                     addMood(mood)
                 addSongMood(songName, mood)
                 alldbgenres = session.query(Genre).all()
@@ -439,8 +438,88 @@ def deletePlaylist(playlistname):
     session.commit()
 
 
-    
+def addSongMood(songname, moodname):
+    if session.query(Song).filter_by(songtitle=songname).first():
+        songID = session.query(Song).filter_by(songtitle=songname).first().songid
+        if session.query(Mood).filter_by(name=moodname).first():
+            moodID = session.query(Mood).filter_by(name=moodname).first().moodid
+            thissongmood = SongMood(songid=songID, moodid=moodID)
+            session.add(thissongmood)
+            session.commit()
+        else:
+            print "Mood does not exist"
+    else:
+        print "Song does not exist"
 
+
+def addSongTempo(songname, temponame):
+     if session.query(Song).filter_by(songtitle=songname).first():
+        songID = session.query(Song).filter_by(songtitle=songname).first().songid
+        if session.query(Tempo).filter_by(name=temponame).first():
+            tempoID = session.query(Tempo).filter_by(name=temponame).first().tempoid
+            thissongtempo = SongTempo(songid=songID, tempoid=tempoID)
+            session.add(thissongtempo)
+            session.commit()
+        else:
+            print "Tempo does not exist"
+     else:
+        print "Song does not exist"
+
+
+def addSongGenre(songname, genrename):
+    if session.query(Song).filter_by(songtitle=songname).first():
+        songID = session.query(Song).filter_by(songtitle=songname).first().songid
+        if session.query(Genre).filter_by(name=genrename).first():
+            genreID = session.query(Genre).filter_by(name=genrename).first().genreid
+            thissonggenre = SongGenre(songid=songID, genreid=genreID)
+            session.add(thissonggenre)
+            session.commit()
+        else:
+            print "Genre does not exist"
+    else:
+        print "Song does not exist"
+
+
+def addTempo(newName):  
+    if session.query(Tempo).filter_by(name=newName).first():
+        print "tempo already exists"
+    else: 
+        new_tempo = Tempo(name=newName)        
+        try:
+            session.add(new_tempo)
+            session.commit()
+            print "Tempo added succesfully" 
+            return
+        except:     
+            print "Server side error" 
+
+
+def addGenre(newName):  
+    if session.query(Genre).filter_by(name=newName).first():
+        print "Genre already exists"
+    else: 
+        new_genre = Genre(name=newName)        
+        try:
+            session.add(new_genre)
+            session.commit()
+            print "Genre added succesfully" 
+            return
+        except:     
+            print "Server side error" 
+
+
+def addMood(newName):  
+    if session.query(Mood).filter_by(name=newName).first():
+        print "Mood already exists"
+    else: 
+        new_mood = Mood(name=newName)        
+        try:
+            session.add(new_mood)
+            session.commit()
+            print "Mood added succesfully" 
+            return
+        except:     
+            print "Server side error"             
 
 
 

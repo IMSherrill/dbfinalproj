@@ -1,4 +1,4 @@
-def newTempo(newName):  
+def addTempo(newName):  
     if session.query(Tempo).filter_by(name=newName).first():
         print "tempo already exists"
     else: 
@@ -11,7 +11,7 @@ def newTempo(newName):
         except:     
             print "Server side error" 
 
-def newGenre(newName):  
+def addGenre(newName):  
     if session.query(Genre).filter_by(name=newName).first():
         print "Genre already exists"
     else: 
@@ -24,7 +24,7 @@ def newGenre(newName):
         except:     
             print "Server side error" 
 
-def newMood(newName):  
+def addMood(newName):  
     if session.query(Mood).filter_by(name=newName).first():
         print "Mood already exists"
     else: 
