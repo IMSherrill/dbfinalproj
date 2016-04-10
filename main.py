@@ -12,6 +12,11 @@ from pprint import pprint
 import json
 import random
 import sys
+import pygn
+
+# pygn settings
+clientID = '1819536053-3AFF3925E00EE6762C465C9D5F92FF3C'
+userID = '27680222405868105-7FDEC129F7C2D66326D1A13CE391976C'
 
 
 # Connection settings
@@ -519,21 +524,46 @@ def addMood(newName):
             print "Mood added succesfully" 
             return
         except:     
-            print "Server side error"             
+            print "Server side error"      
+
+def findArtistAndAddToDB(artistname):   
+    # if session.query(Artist).filter_by(Artist) 
+    artistData = pygn.search(clientID=clientID, userID=userID, artist=artistname)
+    # pprint(artistData) 
+
+    era = artistData.get("artist_era")['1']['TEXT']
+    a = Artist(name=artistData.get("album_artist_name"), era=era)
+    session.add(a)
+    session.commit()
+
+
+    tracks = artistData.get("tracks")
+    # for track in tracks:
+    for track in [tracks[0]]:
+        pprint(track)
+
+        findTrack = session.query(Song).filter_by(songtitle=track['track_title'])
+
+        if findTrack:
+            continue
+        else:
+            s = Song(songtitle=song['track_title'], artistid=artistID, albumid=albumid)
+
+        for k, mood in track['mood'].iteritems():
+            newmood = mood['TEXT']
+            pprint(newmood)
 
 
 
 
-    # TODO: theres gotta be a better way to do this part
-    # moodid = session.query(SongMood).filter_by(songid=song.songid).first().moodid
-    # moods = session.query(Mood).filter_by(moodid=moodid).first().Mood
-    # print mood
+
 
 
 def main():
+    findArtistAndAddToDB(artistname="Gorillaz")
     # importArtist()
     # importAlbum()
-    # importSong()
+    # importSong()  
     # importMood()
     # importGenre()
     # importTempo()
@@ -541,52 +571,58 @@ def main():
     # importSongTempo()
     # importSongGenre()
 
-    while 1:
-        print '0) exit'
-        print '1) add an artist'
-        print '2) add an album'
-        print '3) add a song'
-        print '4) make a playlist'
-        print '5) get a playlist'
-        print '6) update playlist name'
-        print '7) delete a playlist'
+    # while 1:
+    #     print '0) exit'
+    #     print '1) add an artist'
+    #     print '2) add an album'
+    #     print '3) add a song'
+    #     print '4) make a playlist'
+    #     print '5) get a playlist'
+    #     print '6) update playlist name'
+    #     print '7) delete a playlist'
+    #     print '8) search for new artist to add to the DB'
 
-        option = raw_input("option: ")
+    #     option = raw_input("option: ")
 
-        if option == "0":
-            return
+    #     if option == "0":
+    #         return
 
-        if option == "1":
-            addSingleArtist()
+    #     if option == "1":
+    #         addSingleArtist()
 
-        if option == "2":
-            addSingleAlbum()
+    #     if option == "2":
+    #         addSingleAlbum()
 
-        if option == "3":
-            addSingleSong()
+    #     if option == "3":
+    #         addSingleSong()
 
-        if option == "4":
-            print ''
-            song = raw_input("Enter a song name: ")
-            length = int(raw_input("Enter playlist length: "))
-            print ''
-            makePlayList(song=song, length=length)
+    #     if option == "4":
+    #         print ''
+    #         song = raw_input("Enter a song name: ")
+    #         length = int(raw_input("Enter playlist length: "))
+    #         print ''
+    #         makePlayList(song=song, length=length)
 
-        if option == "5":
-            print ''
-            playlistname = raw_input("Enter playlist name: ")
-            getPlaylist(playlistname=playlistname)
-            print ''
+    #     if option == "5":
+    #         print ''
+    #         playlistname = raw_input("Enter playlist name: ")
+    #         getPlaylist(playlistname=playlistname)
+    #         print ''
 
-        if option == "6":
-            updatePlaylistName()
+    #     if option == "6":
+    #         updatePlaylistName()
 
-        if option == "7":
-            print ''
-            playlistname = raw_input("Enter playlist name: ")
-            deletePlaylist(playlistname=playlistname)
-            print ''
+    #     if option == "7":
+    #         print ''
+    #         playlistname = raw_input("Enter playlist name: ")
+    #         deletePlaylist(playlistname=playlistname)
+    #         print ''
 
+    #     if option == "8":
+    #         print ''
+    #         newArtistName = raw_input("Enter new arists name: ")
+    #         findArtistAndAddToDB(newArtistName)
+    #         print ''
 
 
 
