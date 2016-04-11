@@ -533,25 +533,95 @@ def findArtistAndAddToDB(artistname):
 
     era = artistData.get("artist_era")['1']['TEXT']
     a = Artist(name=artistData.get("album_artist_name"), era=era)
-    session.add(a)
-    session.commit()
+    artistname = artistData.get("album_artist_name")
+
+    artist_object = session.query(Artist).filter_by(name=artistname).first()
+
+    if not artist_object:
+        session.add(a)
+        session.commit()
+        artist_object = session.query(Artist).filter_by(name=artistname).first()
+
+
+    artistID = artist_object.artistid
 
 
     tracks = artistData.get("tracks")
-    # for track in tracks:
-    for track in [tracks[0]]:
-        pprint(track)
+    tracks_with_info = []
 
-        findTrack = session.query(Song).filter_by(songtitle=track['track_title'])
+
+    # for track in tracks:
+    for track in tracks:
+        track_info = pygn.search(clientID=clientID, userID=userID, artist=artistname, track=track['track_title'])
+        tracks_with_info.append(track_info)
+        album_title = track_info['album_title']
+        # if it doesnt work try getting rid of artist id in query
+        album = session.query(Album).filter_by(albumtitle=album_title, artistid=artistID).first()
+
+        if not album:
+            al = Album(albumtitle=album_title, artistid=artistID)
+            session.add(al)
+            session.commit()
+
+        albumid = session.query(Album).filter_by(albumtitle=album_title, artistid=artistID).first().albumid
+        track_info['albumID'] = albumid
+
+
+
+    # for track in tracks:
+    for track in tracks_with_info:
+
+        findTrack = session.query(Song).filter_by(songtitle=track['track_title']).first()
 
         if findTrack:
             continue
         else:
-            s = Song(songtitle=song['track_title'], artistid=artistID, albumid=albumid)
+            s = Song(songtitle=track['track_title'], artistid=artistID, albumid=track['albumID'])
+            session.add(s)
+            session.commit()
+
+        song_object = session.query(Song).filter_by(songtitle=track['track_title']).first()
 
         for k, mood in track['mood'].iteritems():
             newmood = mood['TEXT']
-            pprint(newmood)
+            mood_object = session.query(Mood).filter_by(name=newmood).first()
+            if not mood_object:
+                m = Mood(name=newmood)
+                session.add(m)
+                session.commit
+
+            mood_object = session.query(Mood).filter_by(name=newmood).first()
+            sm = SongMood(songid=song_object.songid, moodid=mood_object.moodid)
+            session.add(sm)
+            session.commit()
+
+        for k, genre in track['genre'].iteritems():
+            newgenre = genre['TEXT']
+            genre_object = session.query(Genre).filter_by(name=newgenre).first()
+            if not genre_object:
+                g = Genre(name=newgenre)
+                session.add(g)
+                session.commit
+
+            genre_object = session.query(Genre).filter_by(name=newgenre).first()
+            sg = SongGenre(songid=song_object.songid, genreid=genre_object.genreid)
+            session.add(sg)
+            session.commit()
+
+
+    for k, tempo in track['tempo'].iteritems():
+            newtempo = tempo['TEXT']
+            tempo_object = session.query(Tempo).filter_by(name=newtempo).first()
+            if not tempo_object:
+                t = Tempo(name=newtempo)
+                session.add(t)
+                session.commit
+
+            tempo_object = session.query(Tempo).filter_by(name=newtempo).first()
+            st = SongTempo(songid=song_object.songid, tempoid=tempo_object.tempoid)
+            session.add(st)
+            session.commit()
+
 
 
 
@@ -560,70 +630,70 @@ def findArtistAndAddToDB(artistname):
 
 
 def main():
-    findArtistAndAddToDB(artistname="Gorillaz")
-    # importArtist()
-    # importAlbum()
-    # importSong()  
-    # importMood()
-    # importGenre()
-    # importTempo()
-    # importSongMood()
-    # importSongTempo()
-    # importSongGenre()
 
-    # while 1:
-    #     print '0) exit'
-    #     print '1) add an artist'
-    #     print '2) add an album'
-    #     print '3) add a song'
-    #     print '4) make a playlist'
-    #     print '5) get a playlist'
-    #     print '6) update playlist name'
-    #     print '7) delete a playlist'
-    #     print '8) search for new artist to add to the DB'
+    while 1:
+        print '0) exit'
+        print '1) add an artist'
+        print '2) add an album'
+        print '3) add a song'
+        print '4) make a playlist'
+        print '5) get a playlist'
+        print '6) update playlist name'
+        print '7) delete a playlist'
+        print '8) search for new artist to add to the DB'
 
-    #     option = raw_input("option: ")
+        option = raw_input("option: ")
 
-    #     if option == "0":
-    #         return
+        if option == "0":
+            return
 
-    #     if option == "1":
-    #         addSingleArtist()
+        if option == "1":
+            addSingleArtist()
 
-    #     if option == "2":
-    #         addSingleAlbum()
+        if option == "2":
+            addSingleAlbum()
 
-    #     if option == "3":
-    #         addSingleSong()
+        if option == "3":
+            addSingleSong()
 
-    #     if option == "4":
-    #         print ''
-    #         song = raw_input("Enter a song name: ")
-    #         length = int(raw_input("Enter playlist length: "))
-    #         print ''
-    #         makePlayList(song=song, length=length)
+        if option == "4":
+            print ''
+            song = raw_input("Enter a song name: ")
+            length = int(raw_input("Enter playlist length: "))
+            print ''
+            makePlayList(song=song, length=length)
 
-    #     if option == "5":
-    #         print ''
-    #         playlistname = raw_input("Enter playlist name: ")
-    #         getPlaylist(playlistname=playlistname)
-    #         print ''
+        if option == "5":
+            print ''
+            playlistname = raw_input("Enter playlist name: ")
+            getPlaylist(playlistname=playlistname)
+            print ''
 
-    #     if option == "6":
-    #         updatePlaylistName()
+        if option == "6":
+            updatePlaylistName()
 
-    #     if option == "7":
-    #         print ''
-    #         playlistname = raw_input("Enter playlist name: ")
-    #         deletePlaylist(playlistname=playlistname)
-    #         print ''
+        if option == "7":
+            print ''
+            playlistname = raw_input("Enter playlist name: ")
+            deletePlaylist(playlistname=playlistname)
+            print ''
 
-    #     if option == "8":
-    #         print ''
-    #         newArtistName = raw_input("Enter new arists name: ")
-    #         findArtistAndAddToDB(newArtistName)
-    #         print ''
+        if option == "8":
+            print ''
+            newArtistName = raw_input("Enter new arists name: ")
+            findArtistAndAddToDB(newArtistName)
+            print ''
 
+        if option == "import":
+            importArtist()
+            importAlbum()
+            importSong()  
+            importMood()
+            importGenre()
+            importTempo()
+            importSongMood()
+            importSongTempo()
+            importSongGenre()
 
 
 
