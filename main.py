@@ -609,18 +609,18 @@ def findArtistAndAddToDB(artistname):
             session.commit()
 
 
-    for k, tempo in track['tempo'].iteritems():
-            newtempo = tempo['TEXT']
-            tempo_object = session.query(Tempo).filter_by(name=newtempo).first()
-            if not tempo_object:
-                t = Tempo(name=newtempo)
-                session.add(t)
-                session.commit
+        for k, tempo in track['tempo'].iteritems():
+                newtempo = tempo['TEXT']
+                tempo_object = session.query(Tempo).filter_by(name=newtempo).first()
+                if not tempo_object:
+                    t = Tempo(name=newtempo)
+                    session.add(t)
+                    session.commit
 
-            tempo_object = session.query(Tempo).filter_by(name=newtempo).first()
-            st = SongTempo(songid=song_object.songid, tempoid=tempo_object.tempoid)
-            session.add(st)
-            session.commit()
+                tempo_object = session.query(Tempo).filter_by(name=newtempo).first()
+                st = SongTempo(songid=song_object.songid, tempoid=tempo_object.tempoid)
+                session.add(st)
+                session.commit()
 
 
 
