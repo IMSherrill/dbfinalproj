@@ -684,6 +684,27 @@ def main():
             findArtistAndAddToDB(newArtistName)
             print ''
 
+        if option == "list artists" or option == "list-arists":
+            print ''
+            artists = session.query(Artist).all()
+            for artist in artists:
+                print artist.name
+
+            print ''
+
+        if option == 'list all':
+            print ''
+            artists = session.query(Artist).all()
+            for artist in artists:
+                print artist.name
+                albums = session.query(Album).filter_by(artistid=artist.artistid)
+                for album in albums:
+                    print "     {}".format(album.albumtitle)
+                    songs = session.query(Song).filter_by(albumid=album.albumid)
+                    for song in songs:
+                        print "         {}".format(song.songtitle)
+
+
         if option == "import":
             importArtist()
             importAlbum()
