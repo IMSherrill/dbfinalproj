@@ -718,7 +718,7 @@ def main():
                 songID = song.songid
             except:
                 print 'error song not found in database try a new one'
-                return 
+                continue
 
             print ''
             print "Title: {}".format(song.songtitle)
