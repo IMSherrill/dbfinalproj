@@ -684,7 +684,7 @@ def main():
             findArtistAndAddToDB(newArtistName)
             print ''
 
-        if option == "list artists" or option == "list-arists":
+        if option == "list artists":
             print ''
             artists = session.query(Artist).all()
             for artist in artists:
@@ -703,6 +703,66 @@ def main():
                     songs = session.query(Song).filter_by(albumid=album.albumid)
                     for song in songs:
                         print "         {}".format(song.songtitle)
+
+        if option == 'list songs':
+            print ''
+            songs = session.query(Song).all()
+            for song in songs:
+                print song.songtitle
+            print ''
+
+        if option == "song info":
+            song = raw_input("Enter a song name: ")
+            try:
+                song = session.query(Song).filter_by(songtitle=song).first()
+                songID = song.songid
+            except:
+                print 'error song not found in database try a new one'
+                return 
+
+            print ''
+            print "Title: {}".format(song.songtitle)
+
+
+            album = session.query(Album).filter_by(albumid=song.albumid).first()
+            print "Album: {}".format(album.albumtitle)
+
+
+
+            artist = session.query(Artist).filter_by(artistid=song.artistid).first()
+            print "Artist: {}".format(artist.name)
+
+
+
+            print 'Moods:'
+            moods = []
+            songmoods=session.query(SongMood).filter_by(songid=song.songid).all()
+            for songmood in songmoods:
+                mood = session.query(Mood).filter_by(moodid=songmood.moodid).first()
+                moods.append(mood.name)
+            print moods
+
+
+
+            print 'Genres:'
+            genres = []
+            songgenres=session.query(SongGenre).filter_by(songid=songID).all()
+            for songgenre in songgenres:
+                genre = session.query(Genre).filter_by(genreid=songgenre.genreid).first()
+                genres.append(genre.name)
+            print genres
+
+
+
+            print 'Tempos:'
+            tempos = []
+            songtempos=session.query(SongTempo).filter_by(songid=songID).all()
+            for songtempo in songtempos:
+                tempo = session.query(Tempo).filter_by(tempoid=songtempo.tempoid).first()
+                tempos.append(tempo.name)
+            print tempos
+
+            print ''
 
 
         if option == "import":
