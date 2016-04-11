@@ -764,6 +764,26 @@ def main():
 
             print ''
 
+        if option == "list playlists":
+            print ''
+            playlists = session.query(Playlist).all()
+            for playlist in playlists:
+                print playlist.name
+            print ''
+
+        if option == "list playlists --all":
+            print ''
+            playlists = session.query(Playlist).all()
+            for playlist in playlists:
+                print playlist.name
+                results = session.query(SongPlaylist).filter_by(playlistid=playlist.playlistid).all()
+                for sp in results:
+                    print "     {}".format(session.query(Song).filter_by(songid=sp.songid).first().songtitle)
+                print ''
+
+
+            print ''
+
 
         if option == "import":
             importArtist()
