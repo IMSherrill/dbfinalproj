@@ -1,0 +1,11 @@
+Guide for running the project: On your local machine, install python 2.7.6 or 2.7.9, then using the pip installer, install the libraries SQLAlchemy and Gracenote (in the form of the PYGN api wrapper) using the API key provided in the main file. The user key and api key for the gracenote api is already included in the front end zip folder. Load our schema into a local database on MySQL. Following the addition of these two libraries to your system, run the main.py file py running tha command “Python main.py” or “./main.py” if you have the required permissions. From there, a text dialogue will appear giving you instructions on what commands are available in our system. We suggest first adding artists to your database, followed by making playlists given the names of the songs from the artists you have added. Playlists can be created, renamed, read, and deleted given the commands on the starting page of our website.
+
+There are also a few hidden commands used for debugging and displaying. If a user types “list artists”, a list of artists will appear. Same with “list songs”. “list all” gives you a list of all songs organized by artist and album. “song info” returns the mood, genre, and tempo of a given song. You may type “list playlists” or “list playlists --all” to find a list of playlists and the songs within them. Lastly, you may type “import” to add a full set of information from json files without being connected to the internet.
+
+Libraries needed to run: SQLAlchemy, Gracenote API (in the form of the pygn wrapper library)
+
+Software needed to run: Python 2.7.6-2.7.9, MySQL
+
+Other requirements to run: An active internet connection is required when securing new music to add to your local database.
+
+
