@@ -764,6 +764,9 @@ def main():
 
             print ''
 
+
+
+
         if option == "list playlists":
             print ''
             playlists = session.query(Playlist).all()
@@ -784,6 +787,7 @@ def main():
 
             print ''
 
+            
 
         if option == "import":
             importArtist()
